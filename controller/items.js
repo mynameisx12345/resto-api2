@@ -56,8 +56,14 @@ export async function addSubcategory(name, categoryId){
 }
 
 export async function removeSubcategories(categoryId){
+    // const [result] = await pool.query(`
+    //     DELETE FROM subcategories
+    //     WHERE category_id = ?
+    // `,[categoryId])
+
     const [result] = await pool.query(`
-        DELETE FROM subcategories
+        UPDATE subcategories
+        SET isDeleted = true
         WHERE category_id = ?
     `,[categoryId])
 
@@ -112,7 +118,9 @@ export async function getCategory(id){
     const [result] = await pool.query(`
         SELECT cat.id, cat.name category, subcat.id subcat_id, subcat.name subcategory FROM categories cat LEFT JOIN subcategories subcat
             ON (cat.id = subcat.category_id)
-        WHERE cat.id = ?
+        WHERE cat.id = ? AND
+            cat.isDeleted IS NULL AND
+            subcat.isDeleted IS NULL
     `,[id]);
     let parsed = []
     result.forEach((res)=>{
@@ -132,6 +140,8 @@ export async function getCategories(){
     const [result] = await pool.query(`
     SELECT cat.id, cat.name category, subcat.id subcat_id, subcat.name subcategory FROM categories cat LEFT JOIN subcategories subcat
     ON (cat.id = subcat.category_id)
+    WHERE cat.isDeleted IS NULL AND
+        subcat.isDeleted IS NULL
     `);
    
     let parsed = []
@@ -150,10 +160,16 @@ export async function getCategories(){
 export async function removeCategory(id){
 
     const deleteSubcatRes = await removeSubcategories(id);
+    // const [result] = await pool.query(`
+    //     DELETE FROM categories WHERE
+    //     id = ?
+    // `,[id]);
+
     const [result] = await pool.query(`
-        DELETE FROM categories WHERE
-        id = ?
-    `,[id]);
+        UPDATE categories
+        SET isDeleted = true
+        WHERE id = ?
+    `,[id])
 
     return result;
 }
@@ -189,6 +205,7 @@ export async function getItems(){
     FROM items 
     LEFT OUTER JOIN categories ON (items.category_id=categories.id) 
     LEFT OUTER JOIN subcategories subcat ON (items.subcategory_id=subcat.id)
+    WHERE items.isDeleted IS NULL
     ORDER BY items.id DESC;
     `)
 
@@ -221,10 +238,16 @@ export async function updateItem(body){
 }
 
 export async function removeItem(id){
+    // const [result] = await pool.query(`
+    //     DELETE FROM items 
+    //     WHERE id=?
+    // `,[id]);
+
     const [result] = await pool.query(`
-        DELETE FROM items 
-        WHERE id=?
-    `,[id]);
+        UPDATE items
+        SET isDeleted = true
+        WHERE id = ?
+    `,[id])
 
     return result;
 }

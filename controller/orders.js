@@ -192,13 +192,19 @@ export async function getSales(){
             dtl.status dtl_status,
             item.name item_name ,
             item.description item_description,
-            cat.name categoryName
+            cat.name categoryName,
+            cat.id categoryId,
+            sub.id subcategoryId,
+            sub.name subcategoryName
         FROM order_hdr hdr LEFT OUTER JOIN order_dtl dtl 
                 ON (hdr.id=dtl.order_hdr_id) 
             LEFT OUTER JOIN items item 
                 ON (item.id=dtl.item_id) 
             LEFT OUTER JOIN categories cat 
-                ON (cat.id=item.category_id)`);
+                ON (cat.id=item.category_id)
+            LEFT OUTER JOIN subcategories sub
+                ON (sub.id=item.subcategory_id)
+        ORDER BY hdr.dttm_order DESC`);
     return result;
 }
 

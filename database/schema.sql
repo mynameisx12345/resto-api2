@@ -83,4 +83,45 @@ CREATE TABLE order_dtl (
     status VARCHAR(50),
     order_hdr_id INT NOT NULL,
     FOREIGN KEY (order_hdr_id) REFERENCES order_hdr(id)
-)
+);
+
+CREATE TABLE page_access (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    page_id INT NOT NULL
+);
+
+CREATE TABLE category_access (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    category_id INT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+ALTER TABLE users
+ADD COLUMN password VARCHAR(100);
+
+ALTER TABLE users
+ADD COLUMN username VARCHAR(100);
+
+ALTER TABLE users
+ADD COLUMN isDeleted BOOLEAN;
+
+CREATE TABLE subcategory_access(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    subcategory_id INT NOT NULL,
+    FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
+);
+
+ALTER TABLE items
+ADD COLUMN isDeleted BOOLEAN;
+
+ALTER TABLE categories
+ADD COLUMN isDeleted BOOLEAN;
+
+ALTER TABLE subcategories
+ADD COLUMN isDeleted BOOLEAN;
